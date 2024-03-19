@@ -27,16 +27,20 @@ void simpleGUI::render(){
 	g_internal->render();
 }
 
-void simpleGUI::text(const std::string& label){
+void simpleGUI::text(const std::string_view label){
 	g_internal->text(label);
 }
 
-bool simpleGUI::button(const std::string& label){
+bool simpleGUI::button(const std::string_view label){
 	return g_internal->button(label);
 }
 
-void simpleGUI::checkbox(const std::string& label, bool* check){
-	g_internal->checkbox(label, check);
+bool simpleGUI::checkbox(const std::string_view label, bool* check){
+	return g_internal->checkbox(label, check);
+}
+
+bool simpleGUI::radioButton(const std::string_view label, int* v, int button_v){
+	return g_internal->radioButton(label, v, button_v);
 }
 
 

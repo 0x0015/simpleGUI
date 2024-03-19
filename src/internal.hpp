@@ -18,9 +18,10 @@ public:
 	void exit();
 	void pollEvents();
 	void render();
-	void text(const std::string& label);
-	bool button(const std::string& label);
-	void checkbox(const std::string& label, bool* check);
+	void text(const std::string_view label);
+	bool button(const std::string_view label);
+	bool checkbox(const std::string_view label, bool* check);
+	bool radioButton(const std::string_view label, int* v, int button_v);
 
 	int widgetCounter = -1;
 	std::vector<char*> args;

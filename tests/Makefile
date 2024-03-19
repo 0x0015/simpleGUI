@@ -1,7 +1,9 @@
 all:
 	g++ -g simple.cpp -o simple -L../build -lsimpleGUI -Wl,-rpath='$$ORIGIN'
+	gcc -g simple_c.c -o simple_c -L../build -lsimpleGUI -Wl,-rpath='$$ORIGIN'
 	cp ../build/libsimpleGUI.so .
 
 clean:
 	rm -f simple
+	rm -f simple_c
 	rm -f libsimpleGUI.so

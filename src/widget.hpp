@@ -9,12 +9,13 @@ public:
 		text,
 		button,
 		checkbox,
-		ratio
+		radioButton
 	};
 	widgetTypeEnum widgetType;
 	union widgetValueUnion{
 		bool pressedLastFrame;
 		bool checked;
+		int radioValue;
 	};
 	widgetValueUnion value{};
 	QWidget* widget;

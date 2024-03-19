@@ -29,8 +29,12 @@ add_library(${TARGET_NAME} SHARED
     src/window.hpp
     src/window.cpp
     src/internal.cpp
-    src/internal_render.cpp
-    src/simpleGUI.cpp)
+    src/widgets/text.cpp
+    src/widgets/button.cpp
+    src/widgets/checkbox.cpp
+    src/widgets/radioButton.cpp
+    src/simpleGUI.cpp
+    src/simpleGUI_C.cpp)
     
 if(MSVC)
     target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
