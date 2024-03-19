@@ -19,6 +19,17 @@ int main(int argc, char** argv){
 		static bool check = true;
 		simpleGUI::checkbox("checkbox", &check);
 
+		static int e = 0;
+		simpleGUI::radioButton("radio 0", &e, 0);
+		simpleGUI::radioButton("radio 1", &e, 1);
+		simpleGUI::radioButton("radio 2", &e, 2);
+		simpleGUI::radioButton("radio 3", &e, 3);
+
+		if(simpleGUI::button("Set state of checkbox and radio")){
+			check = false;
+			e = 0;
+		}
+
 		simpleGUI::render();
 	}
 

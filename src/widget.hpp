@@ -1,23 +1,14 @@
 #pragma once
 #include <QWidget>
-#include <functional>
+#include "util.hpp"
+#include <any>
 
 class widget{
 public:
-	enum widgetTypeEnum{
-		none,
-		text,
-		button,
-		checkbox,
-		radioButton
-	};
-	widgetTypeEnum widgetType;
-	union widgetValueUnion{
-		bool pressedLastFrame;
-		bool checked;
-		int radioValue;
-	};
-	widgetValueUnion value{};
+	uint32_t widgetType;
+	std::any state;
 	QWidget* widget;
 	std::size_t valueHash;
 };
+
+

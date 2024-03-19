@@ -1,32 +1,17 @@
 #include "../internal.hpp"
 #include <QCheckBox>
 
+constexpr uint32_t checkbox_type = COMPILE_TIME_CRC32_STR("checkbox");
+
 bool internal::checkbox(const std::string_view label, bool* check){
-	if(widgetCounter >= (int)widgets.size()){
-		widgets.push_back({widget::widgetTypeEnum::checkbox, check ? *check : false});
-		QCheckBox* newWidget = new QCheckBox(QString::fromStdString(std::string(label)));
-		if(check)
-			newWidget->setChecked(*check);
-		gui->layout->addWidget(newWidget);
-		widgets.back().widget = newWidget;
-		widgets.back().valueHash = std::hash<std::string_view>{}(label);
-
-		widgetCounter++;
-		return false;
-	}
-	if(widgets[widgetCounter].widgetType != widget::widgetTypeEnum::checkbox){
-		QCheckBox* newWidget = new QCheckBox(QString::fromStdString(std::string(label)));
-		if(check)
-			newWidget->setChecked(*check);
-		gui->layout->replaceWidget(widgets[widgetCounter].widget, newWidget);
-		widgets[widgetCounter].widget = newWidget;
-		widgets[widgetCounter].value.pressedLastFrame = false;
+	if(emplaceCorrectQWidget<QCheckBox, checkbox_type>(QString::fromStdString(std::string(label)))){
 		widgets[widgetCounter].valueHash = std::hash<std::string_view>{}(label);
-		widgets[widgetCounter].widgetType = widget::widgetTypeEnum::checkbox;
-
+		widgets[widgetCounter].state = check ? *check : false;
+		if(check) static_cast<QCheckBox*>(widgets[widgetCounter].widget)->setChecked(*check);
 		widgetCounter++;
 		return false;
 	}
+
 	auto labelHash = std::hash<std::string_view>{}(label);
 	QCheckBox* checkbox = static_cast<QCheckBox*>(widgets[widgetCounter].widget);
 	
@@ -37,9 +22,9 @@ bool internal::checkbox(const std::string_view label, bool* check){
 	}
 
 	if(check){
-		if(widgets[widgetCounter].value.checked != checkbox->isChecked()){
+		if(std::any_cast<bool>(widgets[widgetCounter].state) != checkbox->isChecked()){
 			*check = checkbox->isChecked();
-			widgets[widgetCounter].value.checked = checkbox->isChecked();
+			widgets[widgetCounter].state = checkbox->isChecked();
 
 			widgetCounter++;
 			return true;

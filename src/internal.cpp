@@ -26,6 +26,7 @@ void internal::sharedInit(int argc, char** argv){
 	app = std::make_shared<QApplication>(argc, argv);
 	gui = std::make_shared<simpleGUIWindow>();
 	gui->parent = this;
+	widgetPosInfo.layout = gui->layout;
 	gui->show();
 
 	widgetCounter = 0;
@@ -47,6 +48,7 @@ void internal::render(){
 }
 
 void internal::exit(){
+	running = false;
 	gui = nullptr;
 	app = nullptr;
 }

@@ -14,7 +14,7 @@ class simpleGUIWindow : public QMainWindow
 
 public:
     simpleGUIWindow(QWidget* parent = nullptr);
-    ~simpleGUIWindow() = default;
+    ~simpleGUIWindow();
     QLayout* layout;
     internal* parent;
 };

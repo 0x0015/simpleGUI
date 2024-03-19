@@ -11,7 +11,7 @@ project(${TARGET_NAME} VERSION 0.0.1 DESCRIPTION "A simple gui library")
 set(CMAKE_AUTOMOC ON)
 
 #Set the CXX standard. Qt 6 I believe uses c++ 17
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #See if the environment var is set
@@ -33,6 +33,7 @@ add_library(${TARGET_NAME} SHARED
     src/widgets/button.cpp
     src/widgets/checkbox.cpp
     src/widgets/radioButton.cpp
+    src/layout/sameLine.cpp
     src/simpleGUI.cpp
     src/simpleGUI_C.cpp)
     

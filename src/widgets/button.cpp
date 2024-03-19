@@ -1,28 +1,16 @@
 #include "../internal.hpp"
 #include <QPushButton>
 
+constexpr uint32_t button_type = COMPILE_TIME_CRC32_STR("button");
+
 bool internal::button(const std::string_view label){
-	if(widgetCounter >= (int)widgets.size()){
-		widgets.push_back({widget::widgetTypeEnum::button, false});
-		QPushButton* newWidget = new QPushButton(QString::fromStdString(std::string(label)));
-		gui->layout->addWidget(newWidget);
-		widgets.back().widget = newWidget;
-		widgets.back().valueHash = std::hash<std::string_view>{}(label);
-
-		widgetCounter++;
-		return false;
-	}
-	if(widgets[widgetCounter].widgetType != widget::widgetTypeEnum::button){
-		QPushButton* newWidget = new QPushButton(QString::fromStdString(std::string(label)));
-		gui->layout->replaceWidget(widgets[widgetCounter].widget, newWidget);
-		widgets[widgetCounter].widget = newWidget;
-		widgets[widgetCounter].value.pressedLastFrame = false;
+	if(emplaceCorrectQWidget<QPushButton, button_type>(QString::fromStdString(std::string(label)))){
 		widgets[widgetCounter].valueHash = std::hash<std::string_view>{}(label);
-		widgets[widgetCounter].widgetType = widget::widgetTypeEnum::button;
-
+		widgets[widgetCounter].state = false;
 		widgetCounter++;
 		return false;
 	}
+
 	auto labelHash = std::hash<std::string_view>{}(label);
 	QPushButton* button = static_cast<QPushButton*>(widgets[widgetCounter].widget);
 	
@@ -33,16 +21,16 @@ bool internal::button(const std::string_view label){
 
 	}
 	if(button->isDown()){
-		if(widgets[widgetCounter].value.pressedLastFrame){
+		if(std::any_cast<bool>(widgets[widgetCounter].state)){
 			widgetCounter++;
 			return false;
 		}else{
-			widgets[widgetCounter].value.pressedLastFrame = true;
+			widgets[widgetCounter].state = true;
 			widgetCounter++;
 			return true;
 		}
 	}else{
-		widgets[widgetCounter].value.pressedLastFrame = false;
+		widgets[widgetCounter].state = false;
 		widgetCounter++;
 		return false;
 	}	

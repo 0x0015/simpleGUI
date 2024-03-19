@@ -20,3 +20,6 @@ void simpleGUIWindow::closeEvent(QCloseEvent* event){
 	parent->running = false;
 }
 
+simpleGUIWindow::~simpleGUIWindow(){
+	parent->running = false;
+}

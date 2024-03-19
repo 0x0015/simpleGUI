@@ -1,32 +1,17 @@
 #include "../internal.hpp"
 #include <QRadioButton>
 
+constexpr uint32_t radioButton_type = COMPILE_TIME_CRC32_STR("radioButton");
+
 bool internal::radioButton(const std::string_view label, int* v, int button_v){
-	if(widgetCounter >= (int)widgets.size()){
-		widgets.push_back({widget::widgetTypeEnum::radioButton, 0});
-		QRadioButton* newWidget = new QRadioButton(QString::fromStdString(std::string(label)));
-		if(v)
-			newWidget->setChecked(*v == button_v);
-		gui->layout->addWidget(newWidget);
-		widgets.back().widget = newWidget;
-		widgets.back().valueHash = std::hash<std::string_view>{}(label);
-
-		widgetCounter++;
-		return false;
-	}
-	if(widgets[widgetCounter].widgetType != widget::widgetTypeEnum::radioButton){
-		QRadioButton* newWidget = new QRadioButton(QString::fromStdString(std::string(label)));
-		if(v)
-			newWidget->setChecked(*v == button_v);
-		gui->layout->replaceWidget(widgets[widgetCounter].widget, newWidget);
-		widgets[widgetCounter].widget = newWidget;
-		widgets[widgetCounter].value.pressedLastFrame = false;
+	if(emplaceCorrectQWidget<QRadioButton, radioButton_type>(QString::fromStdString(std::string(label)))){
 		widgets[widgetCounter].valueHash = std::hash<std::string_view>{}(label);
-		widgets[widgetCounter].widgetType = widget::widgetTypeEnum::checkbox;
-
+		widgets[widgetCounter].state = v ? *v == button_v : false;
+		if(v) static_cast<QRadioButton*>(widgets[widgetCounter].widget)->setChecked(*v == button_v);
 		widgetCounter++;
 		return false;
 	}
+	
 	auto labelHash = std::hash<std::string_view>{}(label);
 	QRadioButton* button = static_cast<QRadioButton*>(widgets[widgetCounter].widget);
 	
@@ -36,27 +21,23 @@ bool internal::radioButton(const std::string_view label, int* v, int button_v){
 		widgets[widgetCounter].valueHash = labelHash;
 	}
 
-	/*
-	if(check){
-		if(widgets[widgetCounter].value.checked != button->isChecked()){
-			*check = button->isChecked();
-			widgets[widgetCounter].value.checked = button->isChecked();
+
+	if(v){
+		if(std::any_cast<bool>(widgets[widgetCounter].state) != button->isChecked()){
+			if(button->isChecked())
+				*v = button_v;
+			widgets[widgetCounter].state = button->isChecked();
 
 			widgetCounter++;
 			return true;
 		}else{
-			if(*check != button->isChecked())
-				button->setChecked(*check);
+			button->setChecked(*v == button_v);
 		}
 	}
 
 	widgetCounter++;
-	if(check)
-		return *check;
+	if(v)
+		return *v == button_v;
 	else
 		return false;
-	*/
-
-	widgetCounter++;
-	return false;
 }

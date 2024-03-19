@@ -44,3 +44,7 @@ bool simpleGUI::radioButton(const std::string_view label, int* v, int button_v){
 }
 
 
+void simpleGUI::sameLine(){
+	g_internal->sameLine();
+}
+
