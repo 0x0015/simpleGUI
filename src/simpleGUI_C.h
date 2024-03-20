@@ -16,6 +16,7 @@ void simpleGUI_text(const char* label);
 bool simpleGUI_button(const char* label);
 bool simpleGUI_checkbox(const char* label, bool* check);
 bool simpleGUI_radioButton(const char* label, int* v, int button_v);
+bool simpleGUI_textInput(const char* label, char* buf, unsigned int bufSize);
 
 #ifdef __cplusplus
 }

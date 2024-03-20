@@ -40,3 +40,6 @@ bool simpleGUI_radioButton(const char* label, int* v, int button_v){
 	return simpleGUI::radioButton(label, v, button_v);
 }
 
+bool simpleGUI_textInput(const char* label, char* buf, unsigned int bufSize){
+	return simpleGUI::textInput(label, std::span<char>(buf, bufSize));
+}

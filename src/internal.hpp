@@ -30,6 +30,8 @@ public:
 	bool button(const std::string_view label);
 	bool checkbox(const std::string_view label, bool* check);
 	bool radioButton(const std::string_view label, int* v, int button_v);
+	bool textInput(const std::string_view label, std::span<char> buf);
+	bool textInput(const std::string_view label, std::string& buf);
 
 	void sameLine();
 

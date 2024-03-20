@@ -33,6 +33,8 @@ add_library(${TARGET_NAME} SHARED
     src/widgets/button.cpp
     src/widgets/checkbox.cpp
     src/widgets/radioButton.cpp
+    src/widgets/textInput.hpp
+    src/widgets/textInput.cpp
     src/layout/sameLine.cpp
     src/simpleGUI.cpp
     src/simpleGUI_C.cpp)

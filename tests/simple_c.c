@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include "../src/simpleGUI_C.h"
 
 int main(int argc, char** argv){
@@ -32,7 +34,17 @@ int main(int argc, char** argv){
 			e = 0;
 		}
 
+		static char str[128] = "Hello World!";
+		simpleGUI_textInput("text input", str, sizeof(str));
+
+		if(simpleGUI_button("Print input text"))
+			printf("%s\n", str);
+
+		if(simpleGUI_button("Reset text input"))
+			strcpy(str, "Hello World!");
+
 		simpleGUI_render();
+		usleep(5000);//don't let it go too fast
 	}
 
 	simpleGUI_exit();

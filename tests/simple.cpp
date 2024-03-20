@@ -30,7 +30,17 @@ int main(int argc, char** argv){
 			e = 0;
 		}
 
+		static std::string str = "Hello World!";
+		simpleGUI::textInput("text input", str);
+
+		if(simpleGUI::button("Print input text"))
+			std::cout<<str<<std::endl;
+
+		if(simpleGUI::button("Reset text input"))
+			str = "Hello World!";
+
 		simpleGUI::render();
+		usleep(5000);//don't let it go too fast
 	}
 
 	simpleGUI::exit();

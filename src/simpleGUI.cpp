@@ -43,6 +43,13 @@ bool simpleGUI::radioButton(const std::string_view label, int* v, int button_v){
 	return g_internal->radioButton(label, v, button_v);
 }
 
+bool simpleGUI::textInput(const std::string_view label, std::span<char> buf){
+	return g_internal->textInput(label, buf);
+}
+
+bool simpleGUI::textInput(const std::string_view label, std::string& buf){
+	return g_internal->textInput(label, buf);
+}
 
 void simpleGUI::sameLine(){
 	g_internal->sameLine();
