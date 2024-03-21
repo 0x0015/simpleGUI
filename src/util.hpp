@@ -1,6 +1,8 @@
 #pragma once
 #include <tuple>
 #include <string>
+#include <span>
+#include <vector>
 
 // function has to live in the std namespace 
 // so that it is picked up by argument-dependent name lookup (ADL).
@@ -38,7 +40,25 @@ namespace std{
           {
             hash_combine(seed, get<0>(tuple));
           }
-        };
+        }; 
+
+	template<class T>
+	struct HashSpanImpl{
+		static void apply(size_t& seed, const std::span<T> s){
+			for(unsigned int i=0;i<s.size();i++){
+				hash_combine(seed, s[i]);
+			}
+		}
+	};
+
+	template<class T>
+	struct HashVectorImpl{
+		static void apply(size_t& seed, const std::vector<T>& vec){
+			for(unsigned int i=0;i<vec.size();i++){
+				hash_combine(seed, vec[i]);
+			}
+		}
+	};
     }
 
     template <typename ... TT>
@@ -57,6 +77,22 @@ namespace std{
     template<typename T1, typename T2> struct hash<std::pair<T1, T2>>{
 	size_t operator()(std::pair<T1, T2> const& tt) const{
 		return std::hash<std::tuple<T1, T2>>{}(std::make_tuple(tt.first, tt.second));
+	}
+    };
+
+    template<typename T> struct hash<std::span<T>>{
+	size_t operator()(std::span<T> const& tt) const{
+		size_t seed = 0;
+		HashSpanImpl<T>::apply(seed, tt);
+		return seed;
+	}
+    };
+
+    template<typename T> struct hash<std::vector<T>>{
+	size_t operator()(std::vector<T> const& tt) const{
+		size_t seed = 0;
+		HashVectorImpl<T>::apply(seed, tt);
+		return seed;
 	}
     };
 }

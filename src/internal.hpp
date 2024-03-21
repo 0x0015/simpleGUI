@@ -32,6 +32,7 @@ public:
 	bool radioButton(const std::string_view label, int* v, int button_v);
 	bool textInput(const std::string_view label, std::span<char> buf);
 	bool textInput(const std::string_view label, std::string& buf);
+	bool combo(const std::string_view label, int* current_item, const std::span<const std::span<char>> items);
 
 	void sameLine();
 
