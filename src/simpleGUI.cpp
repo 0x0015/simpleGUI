@@ -60,6 +60,10 @@ bool simpleGUI::combo(const std::string_view label, int* current_item, const std
 	return g_internal->combo(label, current_item, items);
 }
 
+bool simpleGUI::combo(const std::string_view label, int* current_item, const std::span<const std::string> items){
+	return g_internal->combo(label, current_item, items);
+}
+
 bool simpleGUI::combo(const std::string_view label, int* current_item, const char** items, unsigned int num_items){
 	return g_internal->combo(label, current_item, items, num_items);
 }

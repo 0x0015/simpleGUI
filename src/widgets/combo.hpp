@@ -9,6 +9,7 @@ public:
 	comboWidget(QWidget* parent = nullptr);
 	comboWidget(const std::string_view s_label, const std::string_view s_text, const std::span<const std::string_view> items, QWidget* parent = nullptr);
 	comboWidget(const std::string_view s_label, const std::string_view s_text, const std::span<const char*> items, QWidget* parent = nullptr);
+	comboWidget(const std::string_view s_label, const std::string_view s_text, const std::span<const std::string> items, QWidget* parent = nullptr);
 	~comboWidget() = default;
 	QHBoxLayout* layout;
 	QLabel* label;
