@@ -43,6 +43,14 @@ int main(int argc, char** argv){
 		if(simpleGUI_button("Reset text input"))
 			strcpy(str, "Hello World!");
 
+		const char* items[] = {"item 1", "item 2", "item 3", "item 4"};
+
+		static int currentItem = 0;
+		simpleGUI_combo("combo input", &currentItem, items, SIMPLEGUI_ARRAYSIZE(items));
+
+		if(simpleGUI_button("Set state of combo"))
+			currentItem = 2;
+
 		simpleGUI_render();
 		usleep(5000);//don't let it go too fast
 	}

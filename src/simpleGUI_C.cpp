@@ -43,3 +43,8 @@ bool simpleGUI_radioButton(const char* label, int* v, int button_v){
 bool simpleGUI_textInput(const char* label, char* buf, unsigned int bufSize){
 	return simpleGUI::textInput(label, std::span<char>(buf, bufSize));
 }
+
+bool simpleGUI_combo(const char* label, int* current_item, const char** items, unsigned int num_items){
+	return simpleGUI::combo(label, current_item, items, num_items);
+}
+

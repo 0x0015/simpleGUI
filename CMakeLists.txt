@@ -35,6 +35,7 @@ add_library(${TARGET_NAME} SHARED
     src/widgets/radioButton.cpp
     src/widgets/textInput.hpp
     src/widgets/textInput.cpp
+    src/widgets/combo.hpp
     src/widgets/combo.cpp
     src/layout/sameLine.cpp
     src/simpleGUI.cpp

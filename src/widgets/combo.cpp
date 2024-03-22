@@ -3,7 +3,7 @@
 
 constexpr uint32_t combo_type = COMPILE_TIME_CRC32_STR("combo");
 
-textInputWidget::textInputWidget(QWidget* parent) : QWidget(parent){
+comboWidget::comboWidget(QWidget* parent) : QWidget(parent){
 	layout = new QHBoxLayout();
 	setLayout(layout);
 	label = new QLabel();
@@ -12,42 +12,62 @@ textInputWidget::textInputWidget(QWidget* parent) : QWidget(parent){
 	layout->addWidget(combo);
 }
 
-textInputWidget::textInputWidget(const std::string_view s_label, const std::string_view s_text, const std::span<const std::span<char>> items, QWidget* parent) : QWidget(parent){
+comboWidget::comboWidget(const std::string_view s_label, const std::string_view s_text, const std::span<const std::string_view> items, QWidget* parent) : QWidget(parent){
 	layout = new QHBoxLayout();
 	setLayout(layout);
 	label = new QLabel(QString::fromStdString(std::string(s_label)));
-	combo = new QComboBox(QString::fromStdString(std::string(s_text)));
+	combo = new QComboBox();
 	for(unsigned int i=0;i<items.size();i++){
-		combo.addItem(QString::fromStdString(std::string(std::string_view(items[i].data()))));
+		combo->addItem(QString::fromStdString(std::string(items[i])));
 	}
+	combo->setCurrentText(QString::fromStdString(std::string(s_text)));
 	layout->addWidget(label);
 	layout->addWidget(combo);
 }
 
-size_t hashSpanSpan(const std::span<const std::span<char>> items){
+comboWidget::comboWidget(const std::string_view s_label, const std::string_view s_text, const std::span<const char*> items, QWidget* parent) : QWidget(parent){
+	layout = new QHBoxLayout();
+	setLayout(layout);
+	label = new QLabel(QString::fromStdString(std::string(s_label)));
+	combo = new QComboBox();
+	for(unsigned int i=0;i<items.size();i++){
+		combo->addItem(QString::fromStdString(std::string(items[i])));
+	}
+	combo->setCurrentText(QString::fromStdString(std::string(s_text)));
+	layout->addWidget(label);
+	layout->addWidget(combo);
+}
+
+size_t hashViewSpan(const std::span<const std::string_view> items){
 	size_t itemsHash = 0;
 	for(unsigned int i=0;i<items.size();i++){
-		std::hash_combine(itemsHash, std::string_view(items[i].data()));
+		std::hash_combine(itemsHash, items[i]);
 	}
 	return itemsHash;
 }
 
-bool internal::combo(const std::string_view label, int* current_item, const std::span<const std::span<char>> items){
+struct comboState{
+	size_t itemsHash;
+	int selectionNum;
+};
+
+bool internal::combo(const std::string_view label, int* current_item, const std::span<const std::string_view> items){
 	std::string_view defaultSelected;
 	if(current_item)
-		defaultSelected = std::string_view(items[*current_item].data());
+		defaultSelected = items[*current_item];
 	else
 		defaultSelected = std::string_view("");
 
-	if(emplaceCorrectQWidget<comboWidget, combo_type>(label, defaultSelected)){
+	if(emplaceCorrectQWidget<comboWidget, combo_type>(label, defaultSelected, items)){
 		widgets[widgetCounter].valueHash = std::hash<std::string_view>{}(label);
-		widgets[widgetCounter].state = hashSpanSpan(items);
+		widgets[widgetCounter].state = comboState{hashViewSpan(items), current_item ? *current_item : 0};
 		widgetCounter++;
 		return false;
 	}
 
 	auto labelHash = std::hash<std::string_view>{}(label);
-	size_t itemsHash = hashSpanSpan(items);
+	size_t itemsHash = hashViewSpan(items);
+	comboState& state = std::any_cast<comboState&>(widgets[widgetCounter].state);
 
 	comboWidget* input = static_cast<comboWidget*>(widgets[widgetCounter].widget);
 
@@ -57,28 +77,91 @@ bool internal::combo(const std::string_view label, int* current_item, const std:
 		widgets[widgetCounter].valueHash = labelHash;
 	}
 
-	auto currentItemsHash = 0;
-	for(int i=0;i<input->combo->count();i++){
-		std::hash_combine(currentItemsHash, input->combo->itemText(i));
+	if(state.itemsHash != itemsHash){
+		input->combo->clear();
+		for(unsigned int i=0;i<items.size();i++){
+			input->combo->addItem(QString::fromStdString(std::string(items[i])));
+		}
+		state.itemsHash = itemsHash;
 	}
 
-	if(std::any_cast<size_t>(widgets[widgetCounter].state) != currentItemsHash){
-		//std::cout<<"Found text box to have changed to "<<input->textEdit->text().toStdString()<<", size: "<<input->textEdit->text().size()<<std::endl;
-		widgets[widgetCounter].state = currentTextHash;
-		memcpy(buf.data(), input->textEdit->text().toLocal8Bit().data(), std::min<int>(buf.size()-1, input->textEdit->text().size()));
-		for(unsigned int i=std::min<unsigned int>(buf.size()-1, input->textEdit->text().size());i<buf.size();i++){
-			buf[i] = 0;
+	if(current_item){
+		if(state.selectionNum != *current_item){
+			input->combo->setCurrentIndex(*current_item);
+			state.selectionNum = *current_item;
+		}else if(state.selectionNum != input->combo->currentIndex()){
+			state.selectionNum = input->combo->currentIndex();
+			*current_item = state.selectionNum;
+
+			widgetCounter++;
+			return true;
 		}
-		widgetCounter++;
-		return true;
-	}else if(std::any_cast<size_t>(widgets[widgetCounter].state) != bufHash){
-		//std::cout<<"Found buf to have changed"<<std::endl;
-		widgets[widgetCounter].state = bufHash;
-		input->textEdit->setText(QString::fromStdString(std::string(std::string_view(buf.data()))));
 	}
 
 	widgetCounter++;
 	return false;
 }
-	
+
+size_t hashCharptrSpan(const std::span<const char*> items){
+	size_t itemsHash = 0;
+	for(unsigned int i=0;i<items.size();i++){
+		std::hash_combine(itemsHash, std::string_view(items[i]));
+	}
+	return itemsHash;
 }
+
+bool internal::combo(const std::string_view label, int* current_item, const std::span<const char*> items){
+	std::string_view defaultSelected;
+	if(current_item)
+		defaultSelected = std::string_view(items[*current_item]);
+	else
+		defaultSelected = std::string_view("");
+
+	if(emplaceCorrectQWidget<comboWidget, combo_type>(label, defaultSelected, items)){
+		widgets[widgetCounter].valueHash = std::hash<std::string_view>{}(label);
+		widgets[widgetCounter].state = comboState{hashCharptrSpan(items), current_item ? *current_item : 0};
+		widgetCounter++;
+		return false;
+	}
+
+	auto labelHash = std::hash<std::string_view>{}(label);
+	size_t itemsHash = hashCharptrSpan(items);
+	comboState& state = std::any_cast<comboState&>(widgets[widgetCounter].state);
+
+	comboWidget* input = static_cast<comboWidget*>(widgets[widgetCounter].widget);
+
+	//widget exists, type is text
+	if(widgets[widgetCounter].valueHash != labelHash){
+		input->label->setText(QString::fromStdString(std::string(label)));
+		widgets[widgetCounter].valueHash = labelHash;
+	}
+
+	if(state.itemsHash != itemsHash){
+		input->combo->clear();
+		for(unsigned int i=0;i<items.size();i++){
+			input->combo->addItem(QString::fromStdString(std::string(items[i])));
+		}
+		state.itemsHash = itemsHash;
+	}
+
+	if(current_item){
+		if(state.selectionNum != *current_item){
+			input->combo->setCurrentIndex(*current_item);
+			state.selectionNum = *current_item;
+		}else if(state.selectionNum != input->combo->currentIndex()){
+			state.selectionNum = input->combo->currentIndex();
+			*current_item = state.selectionNum;
+
+			widgetCounter++;
+			return true;
+		}
+	}
+
+	widgetCounter++;
+	return false;
+}
+
+bool internal::combo(const std::string_view label, int* current_item, const char** items, unsigned int num_items){
+	return combo(label, current_item, std::span<const char*>(items, num_items));
+}
+

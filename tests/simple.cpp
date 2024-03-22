@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "../src/simpleGUI.hpp"
 
 int main(int argc, char** argv){
@@ -38,6 +39,12 @@ int main(int argc, char** argv){
 
 		if(simpleGUI::button("Reset text input"))
 			str = "Hello World!";
+
+		static int currentItem = 0;
+		simpleGUI::combo("combo input", &currentItem, {"item 1", "item 2", "item 3", "item 4"});
+
+		if(simpleGUI::button("Set state of combo"))
+			currentItem = 2;
 
 		simpleGUI::render();
 		usleep(5000);//don't let it go too fast
