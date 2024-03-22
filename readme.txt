@@ -14,5 +14,8 @@ bool simpleGUI::checkbox(const std::string_view label, bool* check);
 bool simpleGUI::radioButton(const std::string_view label, int* v, int button_v);
 bool simpleGUI::textInput(const std::string_view label, std::span<char> buf);
 bool simpleGUI::textInput(const std::string_view label, std::string& buf);
-
+bool simpleGUI::combo(const std::string_view label, int* current_item, const std::span<const std::string_view> items);
+bool simpleGUI::combo(const std::string_view label, int* current_item, const std::span<const char*> items);
+bool simpleGUI::combo(const std::string_view label, int* current_item, const char** items, unsigned int num_items);
+bool simpleGUI::combo(const std::string_view label, int* current_item, std::initializer_list<const char*> items);
 
