@@ -40,17 +40,27 @@ add_library(${TARGET_NAME} SHARED
     src/layout/sameLine.cpp
     src/simpleGUI.cpp
     src/simpleGUI_C.cpp)
-    
+
+set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "src/simpleGUI.hpp;src/simpleGUI_C.h")
+
 if(MSVC)
     target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
 else()
-    target_compile_options(${TARGET_NAME} PRIVATE -g -Wall)
+    target_compile_options(${TARGET_NAME} PRIVATE -Wall)
 endif()
 
 target_include_directories(${TARGET_NAME} PRIVATE ${Qt${QT_MAJOR_VERSION}_INCLUDE_DIRS})
 target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 set_target_properties(${TARGET_NAME} PROPERTIES DEBUG_OUTPUT_NAME "${TARGET_NAME}d" RELEASE_OUTPUT_NAME ${TARGET_NAME})
+target_compile_options(${TARGET_NAME} PRIVATE "$<$<CONFIG:DEBUG>:-g>")
+target_compile_options(${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:-O2>")
 
 #Add any extra libs to link also.
 target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
+
+install(TARGETS ${TARGET_NAME}
+	LIBRARY DESTINATION lib
+	PUBLIC_HEADER DESTINATION include/simpleGUI
+)
+
