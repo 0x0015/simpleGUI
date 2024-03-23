@@ -37,11 +37,11 @@ void internal::pollEvents(){
 	app->processEvents();
 }
 
-#include <iostream>
 void internal::render(){
 	for(unsigned int i=widgetCounter;i<widgets.size();i++){
-		std::cout<<"Destroying widget!"<<std::endl;
+		//std::cout<<"Destroying widget!"<<std::endl;
 		gui->layout->removeWidget(widgets[i].widget);
+		widgets[i].widget->setParent(nullptr);
 	}
 	widgets.resize(widgetCounter);
 	widgetCounter = 0;

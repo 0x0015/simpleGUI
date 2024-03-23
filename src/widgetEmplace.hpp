@@ -14,7 +14,9 @@ template<class T, uint32_t widget_type, class... Args> bool internal::emplaceCor
 	}
 	if(widgets[widgetCounter].widgetType != widget_type){
 		T* newWidget = new T(args...);
+		//std::cout<<"Replacing widget!"<<std::endl;
 		widgetPosInfo.layout->replaceWidget(widgets[widgetCounter].widget, newWidget);
+		widgets[widgetCounter].widget->setParent(nullptr);
 		widgets[widgetCounter].widget = newWidget;
 		widgets[widgetCounter].widgetType = widget_type;
 
